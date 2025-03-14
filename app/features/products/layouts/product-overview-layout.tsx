@@ -1,8 +1,10 @@
 import { StarIcon } from "lucide-react";
 import { ChevronUpIcon } from "lucide-react";
 import { Link, NavLink, Outlet } from "react-router";
+import { z } from "zod";
 import { Button, buttonVariants } from "~/common/components/ui/button";
 import { cn } from "~/lib/utils";
+import { Route } from "./+types/product-overview-layout";
 
 export default function ProductOverviewLayout() {
   return (

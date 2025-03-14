@@ -1,0 +1,1 @@
+ALTER TABLE "teams" ADD COLUMN "product_stage" "product_stage" NOT NULL;
