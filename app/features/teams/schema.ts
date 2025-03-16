@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
-import { bigint, check, integer, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { bigint, check, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { PRODUCT_STAGES } from "./constant";
+import { profiles } from "../users/schema";
 
 export const productStage = pgEnum("product_stage", PRODUCT_STAGES.map((stage) => stage.value) as [string, ...string[]]);
 
@@ -11,6 +12,7 @@ export const teams = pgTable("teams",{
     team_size:integer().notNull(),
     equity_split:integer().notNull(),
     roles: text().notNull(),
+    team_leader: uuid().references(() => profiles.profile_id),
     product_description: text().notNull(),
     product_stage: productStage("product_stage").notNull(),
     description : text().notNull(),

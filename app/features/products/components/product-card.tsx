@@ -12,19 +12,19 @@ import { ChevronUpIcon, EyeIcon, MessageCircleIcon } from "lucide-react";
 interface ProductCardProps {
   id: string;
   name: string;
-  description: string;
-  commentsCount: string;
-  viewsCount: string;
-  votesCount: string;
+  tagline: string;
+  reviews: string;
+  views: string;
+  upvotes: string;
 }
 
 export function ProductCard({
   id,
   name,
-  description,
-  commentsCount,
-  viewsCount,
-  votesCount,
+  tagline,
+  reviews,
+  views,
+  upvotes,
 }: ProductCardProps) {
   return (
     <Link to={`/products/${id}`} className="block">
@@ -34,23 +34,23 @@ export function ProductCard({
             {name}
           </CardTitle>
           <CardDescription className="text-muted-foreground">
-            {description}
+            {tagline}
           </CardDescription>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center gap-px text-xs text-muted-foreground">
               <MessageCircleIcon className="w-4 h-4" />
-              <span>{commentsCount}</span>
+              <span>{reviews}</span>
             </div>
             <div className="flex items-center gap-px text-xs text-muted-foreground">
               <EyeIcon className="w-4 h-4" />
-              <span>{viewsCount}</span>
+              <span>{views}</span>
             </div>
           </div>
         </CardHeader>
         <CardFooter className="py-0">
           <Button variant="outline" className="flex flex-col h-14">
             <ChevronUpIcon className="size-4 shrink-0" />
-            <span>{votesCount}</span>
+            <span>{upvotes}</span>
           </Button>
         </CardFooter>
       </Card>

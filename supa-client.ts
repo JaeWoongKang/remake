@@ -1,13 +1,45 @@
 import { createClient } from "@supabase/supabase-js";
-import { Database } from "database.types";
+import { Database as SupabaseDatabase } from "database.types";
+import { MergeDeep, SetNonNullable, SetFieldType } from "type-fest";
 
-const supabaseUrl = "https://sayvoxrjlrsmqngitadv.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNheXZveHJqbHJzbXFuZ2l0YWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE3Njk0MzgsImV4cCI6MjA1NzM0NTQzOH0.cw5OF8p1UX93aRsX2afRzg0OOgm6r42aKStpb6IvZ8Y";
+type Database = MergeDeep<SupabaseDatabase,
+    {
+        public: {
+            Views: {
+                product_overview_view: {
+                    Row: SetFieldType<
+                        SetNonNullable<
+                            SupabaseDatabase["public"]["Views"]["product_overview_view"]["Row"]
+                        >,
+                        "reviews",
+                        string | null
+                    >
+                },
+                community_post_list_view: {
+                    Row: SetFieldType<
+                        SetNonNullable<
+                            SupabaseDatabase["public"]["Views"]["community_post_list_view"]["Row"]
+                        >,
+                        "author_avatar",
+                        string | null
+                    >
+                },
+                gpt_ideas_view: {
+                    Row:
+                    SetNonNullable<
+                        SupabaseDatabase["public"]["Views"]["gpt_ideas_view"]["Row"]
+                    >
+                }
+            }
+        }
+    }
+>   
+
 
 
 const client = createClient<Database>(
-    supabaseUrl,
-    supabaseKey
-);
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_ANON_KEY!
+    );
 
 export default client;

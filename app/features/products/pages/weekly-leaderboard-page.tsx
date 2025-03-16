@@ -135,7 +135,7 @@ export default function WeeklyLeaderboardPage({
             key={product.product_id}
             id={product.product_id.toString()}
             name={product.name}
-            description={product.description}
+            tagline={product.taline}
             commentsCount={product.reviews}
             viewsCount={product.views}
             votesCount={product.upvotes}

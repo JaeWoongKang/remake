@@ -12,12 +12,31 @@ import { ChevronDownIcon } from "lucide-react";
 import { PERIOD_OPTIONS, SORT_OPTIONS } from "../constants";
 import { Input } from "~/common/components/ui/input";
 import { PostCard } from "../components/post-card";
-
+import { getTopics, getPosts } from "../queries";
+import { z } from "zod";
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Community | wemake" }];
 };
 
-export default function CommunityPage() {
+export const loader = async ({request}: Route.LoaderArgs) => {
+  const url = new URL(request.url);
+  const {success,  data: parsedData} = searchParamsSchema.safeParse(Object.fromEntries(url.searchParams));
+  if (!success) {
+    throw new Response("Invalid search params", {status: 400});
+  }
+  const topics = await getTopics();
+  const posts = await getPosts({limit: 20, sorting: parsedData.sorting});
+  return {topics, posts};
+}
+
+const searchParamsSchema = z.object({
+  topic: z.string().optional(),
+  sorting: z.enum(["newest", "popular"]).optional().default("newest"),
+  period: z.enum(["all", "day", "week", "month", "year"]).optional().default("all"),
+  keyword: z.string().optional(),
+});
+
+export default function CommunityPage({loaderData}: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const sorting = searchParams.get("sorting") || "newest";
   const period = searchParams.get("period") || "all";
@@ -82,7 +101,7 @@ export default function CommunityPage() {
               <Form className="w-2/3">
                 <Input
                   type="text"
-                  name="search"
+                  name="keyword"
                   placeholder="Search for discussions"
                 />
               </Form>
@@ -92,15 +111,15 @@ export default function CommunityPage() {
             </Button>
           </div>
           <div className="space-y-5">
-            {Array.from({ length: 11 }).map((_, index) => (
+            {loaderData.posts.map((post) => (
               <PostCard
-                key={`postId-${index}`}
-                id={`postId-${index}`}
-                title="What is the best productivity tool?"
-                author="Nico"
-                authorAvatarUrl="https://github.com/apple.png"
-                category="Productivity"
-                postedAt="12 hours ago"
+                key={post.post_id}
+                id={post.post_id.toString()}
+                title={post.title}
+                author={post.author}
+                authorAvatarUrl={post.author_avatar}
+                category={post.topic}
+                postedAt={post.created_at}
                 expanded
               />
             ))}

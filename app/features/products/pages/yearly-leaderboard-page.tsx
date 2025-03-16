@@ -120,10 +120,10 @@ export default function YearlyLeaderboardPage({
             key={product.product_id}
             id={product.product_id.toString()}
             name={product.name}
-            description={product.description}
-            commentsCount={product.reviews}
-            viewsCount={product.views}
-            votesCount={product.upvotes}
+            tagline={product.tagline}
+            reviews={product.reviews}
+            views={product.views}
+            upvotes={product.upvotes}
           />
         ))}
       </div>
