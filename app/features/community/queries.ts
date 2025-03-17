@@ -53,3 +53,12 @@ export const getPosts = async ({ limit, sorting, period = "all", keyword, topic 
     }
     return data;
 }
+
+
+export const getPostById = async ({postId}: {postId: number}) => {
+    const { data, error } = await client.from("community_post_detail").select("*").eq("post_id", postId).single();
+    if (error) {
+        throw error;
+    }
+    return data;
+}

@@ -83,8 +83,7 @@ export default function TeamPage({loaderData}:Route.ComponentProps) {
               </CardTitle>
               <CardContent className="p-0 font-medium text-xl">
                 <p>
-                  Doggie Social is a social media platform for dogs. It allows
-                  dogs to connect with each other and share their experiences.
+                  {loaderData.team.description}
                 </p>
               </CardContent>
             </CardHeader>
@@ -94,11 +93,11 @@ export default function TeamPage({loaderData}:Route.ComponentProps) {
           <div className="flex gap-5">
             <Avatar className="size-14">
               <AvatarFallback>N</AvatarFallback>
-              <AvatarImage src="https://github.com/inthetiger.png" />
+              {loaderData.team.team_leader && loaderData.team.team_leader.avatar ? <AvatarImage src={loaderData.team.team_leader?.avatar} /> : null}
             </Avatar>
             <div className="flex flex-col">
-              <h4 className="text-lg font-medium">Lynn</h4>
-              <Badge variant="secondary">Entrepreneur</Badge>
+              <h4 className="text-lg font-medium">{loaderData.team.team_leader?.name}</h4>
+              <Badge variant="secondary" className="capitalize">{loaderData.team.team_leader?.role}</Badge>
             </div>
           </div>
           <Form className="space-y-5">

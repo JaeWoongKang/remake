@@ -324,6 +324,13 @@ export type Database = {
             foreignKeyName: "notifications_post_id_posts_post_id_fk"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "notifications_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "community_post_list_view"
             referencedColumns: ["post_id"]
           },
@@ -404,6 +411,13 @@ export type Database = {
             foreignKeyName: "post_replies_post_id_posts_post_id_fk"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_replies_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "community_post_list_view"
             referencedColumns: ["post_id"]
           },
@@ -441,6 +455,13 @@ export type Database = {
             foreignKeyName: "post_upvotes_post_id_posts_post_id_fk"
             columns: ["post_id"]
             isOneToOne: false
+            referencedRelation: "community_post_detail"
+            referencedColumns: ["post_id"]
+          },
+          {
+            foreignKeyName: "post_upvotes_post_id_posts_post_id_fk"
+            columns: ["post_id"]
+            isOneToOne: false
             referencedRelation: "community_post_list_view"
             referencedColumns: ["post_id"]
           },
@@ -469,6 +490,7 @@ export type Database = {
           title: string
           topic_id: number | null
           updated_at: string
+          upvotes: number
         }
         Insert: {
           content: string
@@ -478,6 +500,7 @@ export type Database = {
           title: string
           topic_id?: number | null
           updated_at?: string
+          upvotes?: number
         }
         Update: {
           content?: string
@@ -487,6 +510,7 @@ export type Database = {
           title?: string
           topic_id?: number | null
           updated_at?: string
+          upvotes?: number
         }
         Relationships: [
           {
@@ -706,6 +730,7 @@ export type Database = {
           product_stage: Database["public"]["Enums"]["product_stage"]
           roles: string
           team_id: number
+          team_leader: string | null
           team_size: number
           updated_at: string
         }
@@ -718,6 +743,7 @@ export type Database = {
           product_stage: Database["public"]["Enums"]["product_stage"]
           roles: string
           team_id?: never
+          team_leader?: string | null
           team_size: number
           updated_at?: string
         }
@@ -730,10 +756,19 @@ export type Database = {
           product_stage?: Database["public"]["Enums"]["product_stage"]
           roles?: string
           team_id?: never
+          team_leader?: string | null
           team_size?: number
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "teams_team_leader_fkey"
+            columns: ["team_leader"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       topics: {
         Row: {
@@ -758,6 +793,33 @@ export type Database = {
       }
     }
     Views: {
+      community_post_detail: {
+        Row: {
+          author_avatar: string | null
+          author_created_at: string | null
+          author_name: string | null
+          author_role: Database["public"]["Enums"]["role"] | null
+          content: string | null
+          created_at: string | null
+          post_id: number | null
+          products: number | null
+          profile_id: string | null
+          replies_count: number | null
+          title: string | null
+          topic_name: string | null
+          topic_slug: string | null
+          upvotes: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "posts_profile_id_profiles_profile_id_fk"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       community_post_list_view: {
         Row: {
           author: string | null

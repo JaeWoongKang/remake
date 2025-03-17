@@ -25,7 +25,7 @@ export const loader = async ({request}: Route.LoaderArgs) => {
     throw new Response("Invalid search params", {status: 400});
   }
   const topics = await getTopics();
-  const posts = await getPosts({limit: 20, sorting: parsedData.sorting});
+  const posts = await getPosts({limit: 20, sorting: parsedData.sorting, topic: parsedData.topic});
   return {topics, posts};
 }
 
@@ -40,6 +40,7 @@ export default function CommunityPage({loaderData}: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const sorting = searchParams.get("sorting") || "newest";
   const period = searchParams.get("period") || "all";
+  const topic = searchParams.get("topic") || "";
   return (
     <div className="space-y-20">
       <Hero
@@ -130,15 +131,9 @@ export default function CommunityPage({loaderData}: Route.ComponentProps) {
             Topics
           </span>
           <div className="flex flex-col gap-2 items-start">
-            {[
-              "AI Tools",
-              "Design Tools",
-              "Dev Tools",
-              "Note Taking Apps",
-              "Productivity Tools",
-            ].map((category) => (
-              <Button asChild variant={"link"} key={category} className="pl-0">
-                <Link to={`/community?topic=${category}`}>{category}</Link>
+            {loaderData.topics.map((topic) => (
+              <Button asChild variant={"link"} key={topic.slug} className="pl-0">
+                <Link to={`/community?topic=${topic.slug}`}>{topic.name}</Link>
               </Button>
             ))}
           </div>

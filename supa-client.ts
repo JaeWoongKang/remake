@@ -15,6 +15,12 @@ type Database = MergeDeep<SupabaseDatabase,
                         string | null
                     >
                 },
+                community_post_detail: {
+                    Row:
+                    SetNonNullable<
+                        SupabaseDatabase["public"]["Views"]["community_post_detail"]["Row"]
+                    >
+                },
                 community_post_list_view: {
                     Row: SetFieldType<
                         SetNonNullable<
@@ -33,13 +39,13 @@ type Database = MergeDeep<SupabaseDatabase,
             }
         }
     }
->   
+>
 
 
 
 const client = createClient<Database>(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!
-    );
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!
+);
 
 export default client;
