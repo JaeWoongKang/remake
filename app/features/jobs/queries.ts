@@ -1,6 +1,8 @@
 import client from "supa-client";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "~/types/supabase.types";
 
-export const getJobs = async ({
+export const getJobs = async (client:SupabaseClient<Database>,{
     limit = 10, 
     page = 1,
     type, 
@@ -57,7 +59,7 @@ export const getJobs = async ({
 }
 
 // 단일 작업 조회 함수 추가
-export const getJob = async (jobId: number) => {
+export const getJob = async (client:SupabaseClient<Database>,jobId: number) => {
     try {
         const { data, error } = await client.from("jobs")
             .select(`
@@ -85,7 +87,7 @@ export const getJob = async (jobId: number) => {
     }
 }
 
-export const getJobById = async ({jobId}:{jobId: number}) => {
+export const getJobById = async (client:SupabaseClient<Database>,{jobId}:{jobId: number}) => {
     const { data, error } = await client.from("jobs")
         .select(`
             *

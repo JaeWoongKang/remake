@@ -14,18 +14,22 @@ import { Input } from "~/common/components/ui/input";
 import { PostCard } from "../components/post-card";
 import { getTopics, getPosts } from "../queries";
 import { z } from "zod";
+import { makeSSRClient } from "supa-client";
+
+
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Community | wemake" }];
 };
 
 export const loader = async ({request}: Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request);
   const url = new URL(request.url);
   const {success,  data: parsedData} = searchParamsSchema.safeParse(Object.fromEntries(url.searchParams));
   if (!success) {
     throw new Response("Invalid search params", {status: 400});
   }
-  const topics = await getTopics();
-  const posts = await getPosts({limit: 20, sorting: parsedData.sorting, topic: parsedData.topic});
+  const topics = await getTopics(client);
+  const posts = await getPosts(client,{limit: 20, sorting: parsedData.sorting, topic: parsedData.topic});
   return {topics, posts};
 }
 

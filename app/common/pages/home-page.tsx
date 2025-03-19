@@ -1,4 +1,4 @@
-import { Link, MetaFunction } from "react-router";
+import { Link, MetaFunction, data } from "react-router";
 import { ProductCard } from "~/features/products/components/product-card";
 import { Button } from "../components/ui/button";
 import { PostCard } from "~/features/community/components/post-card";
@@ -12,7 +12,7 @@ import { DateTime } from "luxon";
 import { getGptIdeas } from "~/features/ideas/queries";
 import { Route } from "./+types/home-page";
 import { getJobs } from "~/features/jobs/queries";  
-
+import { makeSSRClient } from "supa-client";
 export const meta: MetaFunction = () => {
   return [
     { title: "Home | wemake" },
@@ -20,12 +20,13 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader = async () => {
-  const products = await getProductsByDateRange({startDate: DateTime.now().minus({days: 1}), endDate: DateTime.now()});
-  const topics = await getTopics();
-  const posts = await getPosts({limit: 20, sorting: "newest"});
-  const ideas = await getGptIdeas({limit: 5});
-  const jobs = await getJobs({limit: 11});
+export const loader = async ({request}: Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request);
+  const products = await getProductsByDateRange(client,{startDate: DateTime.now().minus({days: 1}), endDate: DateTime.now()});
+  const topics = await getTopics(client);
+  const posts = await getPosts(client,{limit: 20, sorting: "newest"});
+  const ideas = await getGptIdeas(client,{limit: 5});
+  const jobs = await getJobs(client,{limit: 11});
   return {products, topics, posts, ideas, jobs};
 }
 

@@ -5,6 +5,7 @@ import { Route } from "./+types/category-page";
 import { getCategory, getProductsByCategory, getProductsByCategoryPages } from "../queries";
 import { number, z } from "zod";
 import { data } from "react-router";
+import { makeSSRClient } from "supa-client";
 
 export const meta = ({ params, data: {category : {name, description} } }: Route.MetaArgs) => {
   const { success, data:paramedData } = paramsSchema.safeParse(params);
@@ -22,14 +23,15 @@ const paramsSchema = z.object({
   page: z.coerce.number().optional().default(1),
 });
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => { 
   const { success, data:paramedData } = paramsSchema.safeParse(params);
   if(!success) {
     throw new Response("Invalid category id", { status: 400 });
-  }
-  const category = await getCategory({ categoryId : paramedData.categoryId});
-  const categoryProducts = await getProductsByCategory({categoryId: paramedData.categoryId, page: paramedData.page});
-  const categoryProductsPages = await getProductsByCategoryPages({ categoryId : paramedData.categoryId});
+  } 
+  const {client, headers} = makeSSRClient(request);
+  const category = await getCategory(client,{ categoryId : paramedData.categoryId});
+  const categoryProducts = await getProductsByCategory(client,{categoryId: paramedData.categoryId, page: paramedData.page});
+  const categoryProductsPages = await getProductsByCategoryPages(client,{ categoryId : paramedData.categoryId});
   return { category, categoryProducts, categoryProductsPages };
 };
 

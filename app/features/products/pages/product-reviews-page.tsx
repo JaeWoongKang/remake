@@ -13,7 +13,7 @@ import { useOutletContext } from "react-router";
 import { Route } from "./+types/product-reviews-page";
 import { getReviewsByProductId } from "../queries";
 import { DateTime } from "luxon";
-
+import { makeSSRClient } from "supa-client";
 
 export function meta() {
   return [
@@ -22,8 +22,9 @@ export function meta() {
   ];
 }
 
-export const loader = async ({params}:Route.LoaderArgs) => {
-  const reviews = await getReviewsByProductId({productId: parseInt(params.productId)});
+export const loader = async ({params, request}:Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request);
+  const reviews = await getReviewsByProductId(client,{productId: parseInt(params.productId)});
   return {reviews};
 }
 

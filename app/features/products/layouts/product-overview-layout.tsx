@@ -6,9 +6,11 @@ import { Button, buttonVariants } from "~/common/components/ui/button";
 import { cn } from "~/lib/utils";
 import { Route } from "./+types/product-overview-layout";
 import { getProductById } from "../queries";
+import { makeSSRClient } from "supa-client";  
 
-export const loader = async ({params}:Route.LoaderArgs& {params:{productId: string}}) => {
-  const product = await getProductById({productId: parseInt(params.productId)});
+export const loader = async ({params, request}:Route.LoaderArgs& {params:{productId: string}}) => {
+  const {client, headers} = makeSSRClient(request);
+  const product = await getProductById(client,{productId: parseInt(params.productId)});
   return { product };
 }
 
@@ -47,8 +49,11 @@ export default function ProductOverviewLayout({loaderData}:Route.ComponentProps)
             variant={"secondary"}
             size="lg"
             className="text-lg h-14 px-10"
+            asChild
           >
-            Visit Website
+            <Link to={`/products/${loaderData.product.product_id}/visit`}>
+              Visit Website
+            </Link>
           </Button>
           <Button size="lg" className="text-lg h-14 px-10">
             <ChevronUpIcon className="size-4" />

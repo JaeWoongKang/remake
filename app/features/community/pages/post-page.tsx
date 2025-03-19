@@ -20,14 +20,18 @@ import { Reply } from "~/features/community/components/reply";
 import client from "supa-client";
 import { getPostById, getReplies } from "../queries";
 import { DateTime } from "luxon";
+import { makeSSRClient } from "supa-client";
+
+
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request); 
   const postId = params.postId;
-  const post = await getPostById({ postId: parseInt(postId) });
-  const replies = await getReplies({ postId: parseInt(postId) });
+  const post = await getPostById(client,{ postId: parseInt(postId) });
+  const replies = await getReplies(client,{ postId: parseInt(postId) });
   return { post, replies };
 }
 export default function PostPage({ loaderData }: Route.ComponentProps) {

@@ -1,7 +1,9 @@
 import { DateTime } from "luxon";
 import client from "supa-client"
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "~/types/supabase.types";
 
-export const getTopics = async () => {
+export const getTopics = async (client:SupabaseClient<Database>) => {
     const { data, error } = await client.from("topics").select("name, slug");
     if (error) {
         throw error;
@@ -10,7 +12,7 @@ export const getTopics = async () => {
 }
 
 
-export const getPosts = async ({ limit, sorting, period = "all", keyword, topic }: 
+export const getPosts = async (client:SupabaseClient<Database>,{ limit, sorting, period = "all", keyword, topic }: 
     { limit: number, 
       sorting: "newest" | "popular", 
       period?: "all" | "day" | "week" | "month" | "year", 
@@ -55,7 +57,7 @@ export const getPosts = async ({ limit, sorting, period = "all", keyword, topic 
 }
 
 
-export const getPostById = async ({postId}: {postId: number}) => {
+export const getPostById = async (client:SupabaseClient<Database>,{postId}: {postId: number}) => {
     const { data, error } = await client.from("community_post_detail").select("*").eq("post_id", postId).single();
     if (error) {
         throw error;
@@ -63,7 +65,7 @@ export const getPostById = async ({postId}: {postId: number}) => {
     return data;
 }
 
-export const getReplies = async ({postId}: {postId: number}) => {
+export const getReplies = async (client:SupabaseClient<Database>,{postId}: {postId: number}) => {
     const replyQuery =
         `
             reply_id,

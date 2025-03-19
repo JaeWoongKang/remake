@@ -3,10 +3,11 @@ import { IdeaCard } from "../components/idea-card";
 import { getGptIdeas } from "../queries";
 import type { MetaFunction } from "react-router";
 import { Route } from "./+types/ideas-page";
+import { makeSSRClient } from "supa-client";
 
-
-export const loader = async () => {
-  const ideas = await getGptIdeas({limit: 10});
+export const loader = async ({request}: Route.LoaderArgs  ) => {
+  const {client, headers} = makeSSRClient(request);
+  const ideas = await getGptIdeas(client,{limit: 10});
   return { ideas };
 };
 
