@@ -18,7 +18,7 @@ import {
 import { Badge } from "~/common/components/ui/badge";
 import { Reply } from "~/features/community/components/reply";
 import client from "supa-client";
-import { getPostById } from "../queries";
+import { getPostById, getReplies } from "../queries";
 import { DateTime } from "luxon";
 export const meta: Route.MetaFunction = ({ params }) => {
   return [{ title: `${params.postId} | wemake` }];
@@ -27,7 +27,8 @@ export const meta: Route.MetaFunction = ({ params }) => {
 export const loader = async ({ params }: Route.LoaderArgs) => {
   const postId = params.postId;
   const post = await getPostById({ postId: parseInt(postId) });
-  return { post };
+  const replies = await getReplies({ postId: parseInt(postId) });
+  return { post, replies };
 }
 export default function PostPage({ loaderData }: Route.ComponentProps) {
   return (
@@ -95,13 +96,16 @@ export default function PostPage({ loaderData }: Route.ComponentProps) {
               <div className="space-y-10">
                 <h4 className="font-semibold">{loaderData.post.replies_count} Replies</h4>
                 <div className="flex flex-col gap-5">
-                  <Reply
-                    username={loaderData.post.author_name!}
-                    avatarUrl={loaderData.post.author_avatar!}
-                    content={loaderData.post.content!}
-                    timestamp={loaderData.post.created_at!}
-                    topLevel
-                  />
+                  {loaderData.replies.map((reply) => (
+                    <Reply
+                      key={reply.reply_id}
+                      username={reply.user.username!}
+                      avatarUrl={reply.user.avatar!}
+                      content={reply.reply!}
+                      timestamp={reply.created_at!}
+                        topLevel ={false}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

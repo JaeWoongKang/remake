@@ -11,10 +11,20 @@ import { Textarea } from "~/common/components/ui/textarea";
 
 interface ReplyProps {
   username: string;
-  avatarUrl: string;
+  avatarUrl: string |  null;
   content: string;
   timestamp: string;
   topLevel: boolean;
+  replies?: {
+    reply_id: number;
+    reply: string;
+    created_at: string;
+    user: {
+      username: string;
+      avatar: string | null;
+      created_at: string;
+    }
+  }[];
 }
 
 export function Reply({
@@ -23,6 +33,7 @@ export function Reply({
   content,
   timestamp,
   topLevel,
+  replies,
 }: ReplyProps) {
   const [replying, setReplying] = useState(false);
   const toggleReplying = () => setReplying((prev) => !prev);
@@ -31,7 +42,7 @@ export function Reply({
       <div className="flex items-start gap-5 w-2/3">
         <Avatar className="size-14">
           <AvatarFallback>{username[0]}</AvatarFallback>
-          <AvatarImage src={avatarUrl} />
+          {avatarUrl ? <AvatarImage src={avatarUrl} /> : null}
         </Avatar>
         <div className="flex flex-col gap-2 items-start">
           <div className="flex gap-2 items-center">
@@ -52,7 +63,7 @@ export function Reply({
         <Form className="flex items-start gap-5 w-3/4">
           <Avatar className="size-14">
             <AvatarFallback>N</AvatarFallback>
-            <AvatarImage src="https://github.com/serranoarevalo.png" />
+            {avatarUrl ?  <AvatarImage src={avatarUrl} /> : null}
           </Avatar>
           <div className="flex flex-col gap-5 items-end w-full">
             <Textarea
@@ -64,15 +75,18 @@ export function Reply({
           </div>
         </Form>
       )}
-      {topLevel && (
+      {topLevel && replies && (
         <div className="pl-20 w-full">
-          <Reply
-            username="Nicolas"
-            avatarUrl="https://github.com/serranoarevalo.png"
-            content="I've been using Todoist for a while now, and it's really great. It's simple, easy to use, and has a lot of features."
-            timestamp="12 hours ago"
-            topLevel={false}
-          />
+          {replies.map((reply) => (
+            <Reply
+              key={reply.reply_id}
+              username={reply.user.username}
+              avatarUrl={reply.user.avatar}
+              content={reply.reply}
+              timestamp={reply.created_at}
+              topLevel={false}
+            />
+          ))}
         </div>
       )}
     </div>

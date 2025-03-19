@@ -2,6 +2,14 @@ import { DateTime } from "luxon";
 import client from "../../../supa-client";
 import { PAGE_SIZE } from "./constants";
 
+export const productListSelect = `
+    product_id,
+    name,
+    tagline,
+    upvotes:stats->>upvotes,
+    views:stats->>views,
+    reviews:stats->>reviews
+`;
 export const getProductsByDateRange = async ({
     startDate,
     endDate,
@@ -13,15 +21,7 @@ export const getProductsByDateRange = async ({
 }) => {
     const { data, error } = await client
         .from("products")
-        .select(`
-         product_id,
-         name,
-         tagline,
-         upvotes:stats->>upvotes,
-         views:stats->>views,
-         reviews:stats->>reviews
-     `
-        )
+        .select(productListSelect)
         .order("stats->>upvotes", { ascending: false })
         .gte("created_at", startDate.toISO())
         .lte("created_at", endDate.toISO())
