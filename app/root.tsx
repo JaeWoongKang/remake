@@ -6,8 +6,9 @@ import {
   Scripts,
   ScrollRestoration,
   useLocation,
-} from "react-router";
-
+  useNavigate,
+} from "react-router";  
+import { makeSSRClient } from "supa-client";
 import type { Route } from "./+types/root";
 import stylesheet from "./app.css?url";
 import Navigation from "./common/components/navigation";
@@ -47,13 +48,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+export const loader = async ({request}: Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request);
+  const {data:{user}} = await client.auth.getUser();
+  return {user};
+}
+
+export default function App({loaderData}: Route.ComponentProps) {
   const { pathname } = useLocation();
+  const navigation = useNavigate();
+  const isLoading = navigation.state === "loading";
+  const isLoggedIn = loaderData.user !== null;
   return (
     <div className={pathname.includes("/auth/") ? "" : "py-28 px-5 md:px-20"}>
       {pathname.includes("/auth") ? null : (
         <Navigation
-          isLoggedIn={true}
+          isLoggedIn={isLoggedIn}
           hasNotifications={false}
           hasMessages={false}
         />
