@@ -1,6 +1,6 @@
-import client from "supa-client";
+
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "~/types/supabase.types";
+import { Database } from "supa-client";
 
 export const getTeams = async (client:SupabaseClient<Database>,{ limit }: { limit: number }) => {
     const { data, error } = await client.from("teams").

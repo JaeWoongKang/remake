@@ -25,6 +25,7 @@ export const action = async ({request}: Route.ActionArgs) => {
   const formData = await request.formData();
   const {success, data, error} = formSchema.safeParse(Object.fromEntries(formData));
   if(!success) {
+    console.error(error);
     return {formErrors: error.flatten().fieldErrors};
   }
   const usernameExists = await checkUsernameExists(request, {username: data.username});
@@ -35,12 +36,12 @@ export const action = async ({request}: Route.ActionArgs) => {
   const {error: signupError} = await client.auth.signUp({email: data.email, password: data.password, options: {data: {name: data.name, username: data.username}}});
   if(signupError) {
     console.error(signupError);
-    return {formErrors: {email: [signupError.message]}};
+    return {signupError:[signupError.message]};
   }
   return redirect("/", {headers});
 }
 
-export default function JoinPage({actionData}: Route.PageProps) {
+export default function JoinPage({actionData}: Route.ComponentProps) {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting" || navigation.state === "loading";
   return (
@@ -60,7 +61,11 @@ export default function JoinPage({actionData}: Route.PageProps) {
             type="text"
             placeholder="Enter your name"
           />
-          {actionData && "formErrors" in actionData && (<p className="text-red-500">{actionData?.formErrors?.name?.join(", ")}</p>)}
+          {actionData && "formErrors" in actionData && (
+            <div className="text-red-500">
+              {actionData?.formErrors?.name?.join(", ")}
+            </div>
+          )}
           <InputPair
             id="username"
             label="Username"
@@ -70,7 +75,11 @@ export default function JoinPage({actionData}: Route.PageProps) {
             type="text"
             placeholder="i.e wemake"
           />
-          {actionData && "formErrors" in actionData && (<p className="text-red-500">{actionData?.formErrors?.username?.join(", ")}</p>)}
+          {actionData && "formErrors" in actionData && (
+            <div className="text-red-500">
+              {actionData?.formErrors?.username?.join(", ")}
+            </div>
+          )}
           <InputPair
             id="email"
             label="Email"
@@ -80,7 +89,11 @@ export default function JoinPage({actionData}: Route.PageProps) {
             type="email"
             placeholder="i.e wemake@example.com"
           />
-          {actionData && "formErrors" in actionData && (<p className="text-red-500">{actionData?.formErrors?.email?.join(", ")}</p>)}
+          {actionData && "formErrors" in actionData && (
+            <div className="text-red-500">
+              {actionData?.formErrors?.email?.join(", ")}
+            </div>
+          )}
           <InputPair
             id="password"
             label="Password"
@@ -90,11 +103,19 @@ export default function JoinPage({actionData}: Route.PageProps) {
             type="password"
             placeholder="Enter your password"
           />
-          {actionData && "formErrors" in actionData && (<p className="text-red-500">{actionData?.formErrors?.password?.join(", ")}</p>)}
+          {actionData && "formErrors" in actionData && (
+            <div className="text-red-500">
+              {actionData?.formErrors?.password?.join(", ")}
+            </div>
+          )}
           <Button className="w-full" type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create account"}
           </Button>
-          {actionData && "signUpError" in actionData && (<p className="text-red-500">{actionData?.signUpError}</p>)}
+          {actionData && "signupError" in actionData && (
+            <div className="text-red-500">
+              {actionData.signupError}
+            </div>
+          )}
         </Form>
         <AuthButtons />
       </div>

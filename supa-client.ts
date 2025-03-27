@@ -2,7 +2,7 @@ import { createBrowserClient, serializeCookieHeader, parseCookieHeader ,createSe
 import { Database as SupabaseDatabase } from "database.types";
 import { MergeDeep, SetNonNullable, SetFieldType } from "type-fest";
 
-type Database = MergeDeep<SupabaseDatabase,
+export type Database = MergeDeep<SupabaseDatabase,
     {
         public: {
             Views: {
@@ -34,6 +34,12 @@ type Database = MergeDeep<SupabaseDatabase,
                     Row:
                     SetNonNullable<
                         SupabaseDatabase["public"]["Views"]["gpt_ideas_view"]["Row"]
+                    >
+                },
+                profiles_view: {
+                    Row:
+                    SetNonNullable<
+                        SupabaseDatabase["public"]["Views"]["profiles_view"]["Row"]
                     >
                 }
             }

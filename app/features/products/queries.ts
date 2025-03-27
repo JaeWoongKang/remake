@@ -1,8 +1,7 @@
 import { DateTime } from "luxon";
 import { PAGE_SIZE } from "./constants";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "~/types/supabase.types";
-
+import { Database } from "supa-client";
 export const productListSelect = `
     product_id,
     name,

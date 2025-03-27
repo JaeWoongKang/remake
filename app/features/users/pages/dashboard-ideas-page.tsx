@@ -1,13 +1,16 @@
 import { IdeaCard } from "~/features/ideas/components/idea-card";
 import { getGptIdeas } from "~/features/ideas/queries";
 import { Route } from "./+types/dashboard-ideas-page";
+import { makeSSRClient } from "supa-client";  
+import { Database } from "supa-client";
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: "My Ideas | wemake" }];
 };
 
-export const loader = async () => {
-  const ideas = await getGptIdeas({limit: 5});
+export const loader = async ({request}: Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request);
+  const ideas = await getGptIdeas(client,{limit: 5});
   return { ideas };
 };
 

@@ -1,12 +1,19 @@
 import { useOutletContext } from "react-router";
 import { Route } from "./+types/profile-page";
-import client from "supa-client";
+import { makeSSRClient } from "supa-client";
+import { getUserById } from "../queries";
 export const meta: Route.MetaFunction = () => {
   return [{ title: "Profile | wemake" }];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const user = await client.rpc("track_event", {
+export const loader = async ({ params , request}: Route.LoaderArgs) => {
+  const {client, headers} = makeSSRClient(request);
+  const {data:{user}} = await client.auth.getUser();
+  if(user){
+    const profile = await getUserById(client, {id: user.id});
+    return 
+  }
+  await client.rpc("track_event", {
     event_type: "profile_view",
     event_data: {
       username: params.username,

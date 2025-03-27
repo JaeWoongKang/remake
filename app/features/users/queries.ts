@@ -1,51 +1,87 @@
-import client from "supa-client";
-import { productListSelect } from "../products/queries";
-import { profiles } from "./schema";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "~/types/supabase.types";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "supa-client";
 
-export const getUserProfile = async (client:SupabaseClient<Database>,username: string) => {
+export const getUserProfile = async (
+  client: SupabaseClient<Database>,
+  { username }: { username: string }
+) => {
   const { data, error } = await client
-    .from("profiles")
-    .select(`
+    .from("profiles_view")
+    .select(
+      `
         profile_id,
-        username,
         name,
+        username,
+        avatar,
         role,
         headline,
         bio,
-        avatar
-        `)
-    .eq("username", username).single();
+        followers:stats->>followers,
+        following:stats->>following,
+        is_following
+        `
+    )
+    .eq("username", username)
+    .single();
   if (error) {
-    throw new Error(error.message);
+    throw error;
   }
   return data;
 };
 
-export const getUserProducts = async (client:SupabaseClient<Database>,username: string) => {
+export const getUserById = async (
+  client: SupabaseClient<Database>,
+  { id }: { id: string }
+) => {
   const { data, error } = await client
-    .from("products")
-    .select(`${productListSelect},
-     profiles!products_profile_id_profiles_profile_id_fk!inner(
-        profile_id
-    )`)
+    .from("profiles_view")
+    .select(
+      `
+        profile_id,
+        name,
+        username,
+        avatar
+        `
+    )
+    .eq("profile_id", id)
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+export const getUserProducts = async (
+  client: SupabaseClient<Database>,
+  { username }: { username: string }
+) => {
+  const { data, error } = await client
+    .from("product_list_view")
+    .select(
+      `
+        *,
+        profiles!products_to_profiles!inner (
+            profile_id
+        )
+    `
+    )
     .eq("profiles.username", username);
   if (error) {
-    throw new Error(error.message);
+    throw error;
   }
   return data;
 };
 
-export const getUserPosts = async (client:SupabaseClient<Database>,username: string) => {
-    const { data, error } = await client
+export const getUserPosts = async (
+  client: SupabaseClient<Database>,
+  { username }: { username: string }
+) => {
+  const { data, error } = await client
     .from("community_post_list_view")
-    .select(`
-        *
-    `)
+    .select("*")
     .eq("author_username", username);
-    if (error) {
-        throw new Error(error.message);
-    }
-    return data;
-}
+  if (error) {
+    throw error;
+  }
+  return data;
+};
